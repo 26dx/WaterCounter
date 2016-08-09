@@ -116,9 +116,10 @@ void loop() {
                 flagCounter = 0;
                 valuesPrint();
         }
-        if (flagMenu)
+        if (flagMenu) {
+                flagMenu = 0;
                 menu();
-
+        }
         /*  if (++counterSleep >= 1000) {
             counterSleep = 0;
             sleepEnable();
@@ -200,12 +201,10 @@ void menu() {
 
 void interruptInput() {
         counterSleep = 0;
-        uint8_t in5, in4 = 0;
-        in4 = digitalRead(4);
-        in5 = digitalRead(5);
-        if (in4)
+        uint8_t in5, in4 = 0; 
+        if (digitalRead(4))
                 EEPROMWriteLong(ADDRESS_0, ++counterValue0);
-        else if (in5)
+        else if (digitalRead(5))
                 EEPROMWriteLong(ADDRESS_1, ++counterValue1);
         else
                 return;
