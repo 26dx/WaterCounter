@@ -140,7 +140,6 @@ void menu() {
         mu2_mi1.set_value(counterValue0);
         mu2_mi2.set_value(counterValue1);
         flagInMenu = 1;
-
         ms.display();
         do {
                 if (flagMenu) {
