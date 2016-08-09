@@ -11,6 +11,7 @@
 
 // counters
 volatile long counterValue0, counterValue1 = 0;
+volatile uint8_t lastHour, currentHour = 0;
 volatile uint8_t flagMenu, flagCounter, flagInMenu, buttonPressed = 0;
 volatile uint16_t counterSleep = 0;
 
@@ -201,13 +202,10 @@ void menu() {
 
 void interruptInput() {
         counterSleep = 0;
-        uint8_t in5, in4 = 0; 
         if (digitalRead(4))
                 EEPROMWriteLong(ADDRESS_0, ++counterValue0);
         else if (digitalRead(5))
                 EEPROMWriteLong(ADDRESS_1, ++counterValue1);
-        else
-                return;
         flagCounter = 1;
 }
 
