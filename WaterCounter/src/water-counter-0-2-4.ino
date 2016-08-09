@@ -35,8 +35,8 @@ MenuItem mu1_mi2("1.2.Monthly ", &on_item2_selected);
 MenuItem mu1_mi3("1.3.Weekly  ", &on_item3_selected);
 MenuItem mu1_mi4("1.4.Daily   ", &on_item7_selected);
 Menu mu2("2.Setup     ");
-NumericMenuItem mu2_mi1("2.1.Hot ", nullptr, 0, 0, 99999, 1, format_int);
-NumericMenuItem mu2_mi2("2.2.Cold ", nullptr, 0, 0, 99999, 1, format_int);
+NumericMenuItem mu2_mi1("2.1.In0 ", nullptr, 0, 0, 99999, 1, format_int);
+NumericMenuItem mu2_mi2("2.2.In1 ", nullptr, 0, 0, 99999, 1, format_int);
 MenuItem mu2_mi3("2.3.Reset   ", &on_item6_selected);
 MenuItem mm_mi1("3.Exit      ", &mi_return);
 
@@ -54,14 +54,6 @@ void on_item2_selected(MenuItem *p_menu_item) {
 }
 void on_item3_selected(MenuItem *p_menu_item) {
         Serial.println("Weekly Sel");
-        delay(1500); // so we can look the result on the LCD
-}
-void on_item4_selected(MenuItem *p_menu_item) {
-        Serial.println("Hot Selected");
-        delay(1500); // so we can look the result on the LCD
-}
-void on_item5_selected(MenuItem *p_menu_item) {
-        Serial.println("Cold Sel");
         delay(1500); // so we can look the result on the LCD
 }
 void on_item6_selected(MenuItem *p_menu_item) {
