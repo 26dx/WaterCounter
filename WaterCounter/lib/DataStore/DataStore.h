@@ -6,6 +6,7 @@ public:
         void set_value(long _dataValue);
         void increment_value(String _date);
         long get_value();
+        String get_description();
 private:
         long dataValueOverall;
         uint8_t dataValueMonthly;

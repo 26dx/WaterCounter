@@ -17,3 +17,7 @@ void dataStore::increment_value(String _date) {
 long dataStore::get_value() {
         return dataValueOverall;
 }
+
+String dataStore::get_description() {
+        return dataDesctiption;
+}

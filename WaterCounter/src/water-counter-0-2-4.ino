@@ -11,8 +11,6 @@
 #define ADDRESS_1 4
 
 // counters
-//volatile long counterValue0, counterValue1 = 0;
-volatile uint8_t lastHour, currentHour = 0;
 volatile uint8_t flagMenu, flagCounter, flagInMenu, buttonPressed = 0;
 volatile uint16_t counterSleep = 0;
 
@@ -140,12 +138,12 @@ void valuesPrint() {
         String buffer;
         if (textValue0.length()<=5) {
                 buffer+=textValue0;
-                for (int i=0; i<=(5 - textValue0.length()); i++)
+                for (int i=0; i<=(5 - counterData01.get_description().length()); i++)
                         buffer+=" ";
         }
         if (textValue0.length()<=5) {
                 buffer+=textValue0;
-                for (int i=0; i<=(5 - textValue0.length()); i++)
+                for (int i=0; i<=(5 - counterData02.get_description().length()); i++)
                         buffer+=" ";
         }
         buffer+=textTime;
