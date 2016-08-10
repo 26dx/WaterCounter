@@ -6,9 +6,13 @@
 #include <EEPROM.h>
 #include <MenuSystem.h>
 #include <avr/sleep.h>
+#include <Rtc_Pcf8563.h>
 
 #define ADDRESS_0 0
 #define ADDRESS_1 4
+
+//init the real time clock
+Rtc_Pcf8563 rtc;
 
 // counters
 volatile uint8_t flagMenu, flagCounter, flagInMenu, buttonPressed = 0;
@@ -22,8 +26,6 @@ dataStore counterData02("Hot");
 void on_item1_selected(MenuItem *p_menu_item);
 void on_item2_selected(MenuItem *p_menu_item);
 void on_item3_selected(MenuItem *p_menu_item);
-void on_item4_selected(MenuItem *p_menu_item);
-void on_item5_selected(MenuItem *p_menu_item);
 void on_item6_selected(MenuItem *p_menu_item);
 void on_item7_selected(MenuItem *p_menu_item);
 void mi_return(MenuItem *p_menu_item);
@@ -75,6 +77,18 @@ void mi_return(MenuItem *p_menu_item) {
 void setup() {
         Serial.begin(9600);
 
+/*
+        //clear out the registers
+        rtc.initClock();
+        //day, weekday, month, century(1=1900, 0=2000), year(0-99)
+        rtc.setDate(10, 4, 8, 0, 16);
+        //hr, min, sec
+        rtc.setTime(21, 19, 0);
+*/
+        Serial.println();
+        Serial.println(rtc.formatDate(RTCC_DATE_WORLD));
+
+
         // menu init
         ms.get_root_menu().add_menu(&mu1);
         mu1.add_item(&mu1_mi1);
@@ -88,10 +102,9 @@ void setup() {
         ms.get_root_menu().add_item(&mm_mi1);
 
         // init pins
-        for (uint8_t input = 4; input <= 9; input++) {
+        for (uint8_t input = 4; input <= 9; input++)
                 pinMode(input, INPUT);
-                Serial.println(input);
-        }
+
         pinMode(13, OUTPUT); // sleep pin
         digitalWrite(13, HIGH);
 
@@ -108,7 +121,6 @@ void setup() {
 }
 
 void loop() {
-        // put your main code here, to run repeatedly:
         if (flagCounter) {
                 flagCounter = 0;
                 valuesPrint();
@@ -131,26 +143,22 @@ void valuesPrint() {
         Serial.print("Input1: ");
         Serial.println(counterData02.get_value());
 
-        String textValue0="Cold";
-        String textValue1="Hot";
-        String textTime="2234";
         String textUnit="m3/m";
         String buffer;
-        if (textValue0.length()<=5) {
-                buffer+=textValue0;
+        if (counterData01.get_description().length()<=5) {
+                buffer+=counterData01.get_description();
                 for (int i=0; i<=(5 - counterData01.get_description().length()); i++)
                         buffer+=" ";
         }
-        if (textValue0.length()<=5) {
-                buffer+=textValue0;
-                for (int i=0; i<=(5 - counterData02.get_description().length()); i++)
+        if (counterData02.get_description().length()<=4) {
+                buffer+=counterData02.get_description();
+                for (int i=0; i<=(4 - counterData02.get_description().length()); i++)
                         buffer+=" ";
         }
-        buffer+=textTime;
+        buffer+=rtc.formatTime(RTCC_TIME_HM);
         Serial.println(buffer);
 }
 
-// three layers: 1st main menu, 2nd submenu and 3rd change parameters
 void menu() {
         uint8_t incCounter = 0;
         mu2_mi1.set_value(counterData01.get_value());
@@ -183,7 +191,6 @@ void menu() {
                 }
                 if ((mu2_mi1.has_focus() || mu2_mi2.has_focus()) &&
                     (buttonScan() == 7 || buttonScan() == 8) && buttonPressed) {
-                        //delay(300);
                         if (incCounter <= 40)
                                 incCounter++;
                         if (incCounter <= 10)
