@@ -135,25 +135,6 @@ void valuesPrint() {
         Serial.println(counterValue0);
         Serial.print("Input1: ");
         Serial.println(counterValue1);
-
-        String textValue0="Cold";
-        String textValue1="Hot";
-        String textTime="2234";
-        String textUnit="m3/m";
-        String buffer;
-        if (textValue0.length()<=5) {
-                buffer+=textValue0;
-                for (int i=0; i<=(5 - textValue0.length()); i++)
-                        buffer+=" ";
-        }
-        if (textValue0.length()<=5) {
-                buffer+=textValue0;
-                for (int i=0; i<=(5 - textValue0.length()); i++)
-                        buffer+=" ";
-        }
-        buffer+=textTime;
-        Serial.println(buffer);
-
 }
 
 // three layers: 1st main menu, 2nd submenu and 3rd change parameters
