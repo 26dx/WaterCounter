@@ -129,7 +129,6 @@ void valuesPrint() {
         Serial.print("Input0: ");
         Serial.println(counterData01.get_value());
         Serial.print("Input1: ");
-<<<<<<< HEAD
         Serial.println(counterData02.get_value());
 
         String textValue0="Cold";
@@ -149,10 +148,6 @@ void valuesPrint() {
         }
         buffer+=textTime;
         Serial.println(buffer);
-
-=======
-        Serial.println(counterValue1);
->>>>>>> master
 }
 
 // three layers: 1st main menu, 2nd submenu and 3rd change parameters
