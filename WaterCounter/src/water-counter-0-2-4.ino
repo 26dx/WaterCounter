@@ -16,6 +16,9 @@ volatile uint8_t lastHour, currentHour = 0;
 volatile uint8_t flagMenu, flagCounter, flagInMenu, buttonPressed = 0;
 volatile uint16_t counterSleep = 0;
 
+// dataStore
+dataStore counterData01("Cold");
+dataStore counterData02("Hot");
 
 // forwart declaration
 void on_item1_selected(MenuItem *p_menu_item);
