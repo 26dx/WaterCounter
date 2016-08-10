@@ -2,6 +2,7 @@
 
 #include "CustomNumericMenuItem.h"
 #include "MyRenderer.h"
+#include "DataStore.h"
 #include <EEPROM.h>
 #include <MenuSystem.h>
 #include <avr/sleep.h>
@@ -14,6 +15,7 @@ volatile long counterValue0, counterValue1 = 0;
 volatile uint8_t lastHour, currentHour = 0;
 volatile uint8_t flagMenu, flagCounter, flagInMenu, buttonPressed = 0;
 volatile uint16_t counterSleep = 0;
+
 
 // forwart declaration
 void on_item1_selected(MenuItem *p_menu_item);
@@ -93,7 +95,6 @@ void setup() {
         // init pins
         for (uint8_t input = 4; input <= 9; input++) {
                 pinMode(input, INPUT);
-                Serial.print("#initialization pin: ");
                 Serial.println(input);
         }
         pinMode(13, OUTPUT); // sleep pin
@@ -134,6 +135,25 @@ void valuesPrint() {
         Serial.println(counterValue0);
         Serial.print("Input1: ");
         Serial.println(counterValue1);
+
+        String textValue0="Cold";
+        String textValue1="Hot";
+        String textTime="2234";
+        String textUnit="m3/m";
+        String buffer;
+        if (textValue0.length()<=5) {
+                buffer+=textValue0;
+                for (int i=0; i<=(5 - textValue0.length()); i++)
+                        buffer+=" ";
+        }
+        if (textValue0.length()<=5) {
+                buffer+=textValue0;
+                for (int i=0; i<=(5 - textValue0.length()); i++)
+                        buffer+=" ";
+        }
+        buffer+=textTime;
+        Serial.println(buffer);
+
 }
 
 // three layers: 1st main menu, 2nd submenu and 3rd change parameters
