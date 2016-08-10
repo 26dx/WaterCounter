@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "DataStore.h"
 
 dataStore::dataStore(String _description) {
@@ -9,8 +10,9 @@ void dataStore::set_value(long _dataValue) {
         dataValueMonthly = 0;
         dataValueWeekly = 0;
 }
-void dataStore::increment_value() {
-
+// если date не совпадает с предыдущем значением,то сбрасываем соответственные счетчики - дневной, недельный, месячный
+void dataStore::increment_value(String _date) {
+        dataValueOverall++;
 }
 long dataStore::get_value() {
         return dataValueOverall;

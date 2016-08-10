@@ -4,7 +4,7 @@ class dataStore {
 public:
         dataStore(String _description);
         void set_value(long _dataValue);
-        void increment_value();
+        void increment_value(String _date);
         long get_value();
 private:
         long dataValueOverall;

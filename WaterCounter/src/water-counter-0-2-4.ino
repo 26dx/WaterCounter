@@ -11,7 +11,7 @@
 #define ADDRESS_1 4
 
 // counters
-volatile long counterValue0, counterValue1 = 0;
+//volatile long counterValue0, counterValue1 = 0;
 volatile uint8_t lastHour, currentHour = 0;
 volatile uint8_t flagMenu, flagCounter, flagInMenu, buttonPressed = 0;
 volatile uint16_t counterSleep = 0;
@@ -64,20 +64,14 @@ void on_item3_selected(MenuItem *p_menu_item) {
 }
 void on_item6_selected(MenuItem *p_menu_item) {
         Serial.println("Reseting...");
-        counterValue0 = 0;
-        counterValue1 = 0;
+        counterData01.set_value(0);
+        counterData02.set_value(0);
         delay(1500); // so we can look the result on the LCD
 }
 void on_item7_selected(MenuItem *p_menu_item) {
-        Serial.println("Daily Sel");
-        counterValue0 = 0;
-        counterValue1 = 0;
-        delay(1500); // so we can look the result on the LCD
 }
 void mi_return(MenuItem *p_menu_item) {
         flagInMenu = 0;
-        Serial.println("Exiting...");
-        delay(1500); // so we can look the result on the LCD
 }
 
 void setup() {
@@ -108,8 +102,8 @@ void setup() {
         attachInterrupt(1, interruptButton, RISING);
 
         // loading values from EEPROM
-        counterValue0 = EEPROMReadLong(ADDRESS_0);
-        counterValue1 = EEPROMReadLong(ADDRESS_1);
+        counterData01.set_value(EEPROMReadLong(ADDRESS_0));
+        counterData02.set_value(EEPROMReadLong(ADDRESS_1));
 
         // print current values
         valuesPrint();
@@ -135,9 +129,9 @@ void loop() {
 
 void valuesPrint() {
         Serial.print("Input0: ");
-        Serial.println(counterValue0);
+        Serial.println(counterData01.get_value());
         Serial.print("Input1: ");
-        Serial.println(counterValue1);
+        Serial.println(counterData02.get_value());
 
         String textValue0="Cold";
         String textValue1="Hot";
@@ -162,8 +156,8 @@ void valuesPrint() {
 // three layers: 1st main menu, 2nd submenu and 3rd change parameters
 void menu() {
         uint8_t incCounter = 0;
-        mu2_mi1.set_value(counterValue0);
-        mu2_mi2.set_value(counterValue1);
+        mu2_mi1.set_value(counterData01.get_value());
+        mu2_mi2.set_value(counterData02.get_value());
         flagInMenu = 1;
         ms.display();
         do {
@@ -216,19 +210,23 @@ void menu() {
                 }
                 delay(220);
         } while (flagInMenu);
-        counterValue0 = mu2_mi1.get_value();
-        counterValue1 = mu2_mi2.get_value();
-        EEPROMWriteLong(ADDRESS_0, counterValue0);
-        EEPROMWriteLong(ADDRESS_1, counterValue1);
+        counterData01.set_value(mu2_mi1.get_value());
+        counterData02.set_value(mu2_mi2.get_value());
+        EEPROMWriteLong(ADDRESS_0, counterData01.get_value());
+        EEPROMWriteLong(ADDRESS_1, counterData02.get_value());
         valuesPrint();
 }
 
 void interruptInput() {
         counterSleep = 0;
-        if (digitalRead(4))
-                EEPROMWriteLong(ADDRESS_0, ++counterValue0);
-        else if (digitalRead(5))
-                EEPROMWriteLong(ADDRESS_1, ++counterValue1);
+        if (digitalRead(4)) {
+                counterData01.increment_value("test");
+                EEPROMWriteLong(ADDRESS_0, counterData01.get_value());
+        }
+        else if (digitalRead(5)) {
+                counterData02.increment_value("test");
+                EEPROMWriteLong(ADDRESS_1, counterData02.get_value());
+        }
         flagCounter = 1;
 }
 
