@@ -77,17 +77,15 @@ void mi_return(MenuItem *p_menu_item) {
 void setup() {
         Serial.begin(9600);
 
-/*
+/*      RTC initialization
         //clear out the registers
         rtc.initClock();
         //day, weekday, month, century(1=1900, 0=2000), year(0-99)
         rtc.setDate(10, 4, 8, 0, 16);
         //hr, min, sec
         rtc.setTime(21, 19, 0);
-*/
+ */
         Serial.println();
-        Serial.println(rtc.formatDate(RTCC_DATE_WORLD));
-
 
         // menu init
         ms.get_root_menu().add_menu(&mu1);
@@ -137,14 +135,15 @@ void loop() {
             delay(100);*/
 }
 
+// необходимо добавить ограничение длины описания счетчика
 void valuesPrint() {
-        Serial.print("Input0: ");
-        Serial.println(counterData01.get_value());
-        Serial.print("Input1: ");
-        Serial.println(counterData02.get_value());
-
         String textUnit="m3/m";
         String buffer;
+        // шкала по оси икс
+        for (int i=0; i<10; Serial.print(i++));
+        for (int i=0; i<6; Serial.print(i++));
+
+        Serial.println();
         if (counterData01.get_description().length()<=5) {
                 buffer+=counterData01.get_description();
                 for (int i=0; i<=(5 - counterData01.get_description().length()); i++)
@@ -156,7 +155,19 @@ void valuesPrint() {
                         buffer+=" ";
         }
         buffer+=rtc.formatTime(RTCC_TIME_HM);
+        // печатаем первую строку экрана
         Serial.println(buffer);
+
+        // готовим вторую строку
+        buffer = "";
+        for (int i=0; i<(5-counterData01.get_formated_value(counterData01.get_value()).length()); i++)
+                buffer+=" ";
+        buffer+=counterData01.get_formated_value(counterData01.get_value());
+        for (int i=0; i<(5-counterData02.get_formated_value(counterData02.get_value()).length()); i++)
+                buffer+=" ";
+        buffer+=counterData02.get_formated_value(counterData02.get_value());
+        Serial.println(buffer);
+
 }
 
 void menu() {

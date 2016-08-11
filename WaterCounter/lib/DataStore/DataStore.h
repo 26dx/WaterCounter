@@ -6,6 +6,8 @@ public:
         void set_value(long _dataValue);
         void increment_value(String _date);
         long get_value();
+        int get_number_of_digits(long input);
+        String get_formated_value(long input);
         String get_description();
 private:
         long dataValueOverall;

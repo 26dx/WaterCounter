@@ -17,7 +17,16 @@ void dataStore::increment_value(String _date) {
 long dataStore::get_value() {
         return dataValueOverall;
 }
-
+int get_number_of_digits(long input) {
+  String buffer = String(input);
+  return buffer.length();
+}
+// максимальное значение dataValueOverall 9 999 999 (7 разрядов)
+// для выводу показаний достаточно 5 разрядов (99 999)
+String dataStore::get_formated_value(long input) {
+        String buffer = String(input/100);
+        return buffer;
+}
 String dataStore::get_description() {
         return dataDesctiption;
 }
