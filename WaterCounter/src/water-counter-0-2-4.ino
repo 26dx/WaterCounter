@@ -155,7 +155,7 @@ void valuesPrint() {
                         buffer+=" ";
         }
         buffer+=rtc.formatTime(RTCC_TIME_HM);
-        // печатаем первую строку экрана
+        // выподим первую строку экрана
         Serial.println(buffer);
 
         // готовим вторую строку
@@ -166,7 +166,12 @@ void valuesPrint() {
         for (int i=0; i<(5-counterData02.get_formated_value(counterData02.get_value()).length()); i++)
                 buffer+=" ";
         buffer+=counterData02.get_formated_value(counterData02.get_value());
-        Serial.println(buffer);
+        int bufferLenght = buffer.length();
+        for (int i =0; i<(13-bufferLenght); i++)
+                buffer+=" ";
+        buffer+="m3";
+                 // выводим сторую строку
+                 Serial.println(buffer);
 
 }
 
