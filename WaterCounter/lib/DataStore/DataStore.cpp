@@ -9,9 +9,29 @@ void dataStore::set_value(long _dataValue) {
         dataValueDaily = 0;
         dataValueMonthly = 0;
         dataValueWeekly = 0;
+        dataValueHour = 0;
+
 }
 // если date не совпадает с предыдущем значением,то сбрасываем соответственные счетчики - дневной, недельный, месячный
-void dataStore::increment_value(String _date) {
+void dataStore::increment_value(Rtc_Pcf8563 rtc) {
+        if (currentHour != rtc.getHour()) {
+                currentHour = rtc.getHour();
+                dataValueHour = 1;
+        }
+        else
+                dataValueDaily++;
+        if (currentDay != rtc.getDay()) {
+                currentDay = rtc.getDay();
+                dataValueDaily = 1;
+        } else
+                dataValueHour++;
+        if (currentMonth != rtc.getMonth()) {
+                currentMonth = rtc.getMonth();
+                dataValueMonthly = 1;
+        } else
+                dataValueMonthly++;
+
+        dataValueWeekly = 0;
         dataValueOverall++;
 }
 long dataStore::get_value() {

@@ -240,11 +240,11 @@ void menu() {
 void interruptInput() {
         counterSleep = 0;
         if (digitalRead(4)) {
-                counterData01.increment_value("test");
+                counterData01.increment_value(rtc);
                 EEPROMWriteLong(ADDRESS_0, counterData01.get_value());
         }
         else if (digitalRead(5)) {
-                counterData02.increment_value("test");
+                counterData02.increment_value(rtc);
                 EEPROMWriteLong(ADDRESS_1, counterData02.get_value());
         }
         flagCounter = 1;
