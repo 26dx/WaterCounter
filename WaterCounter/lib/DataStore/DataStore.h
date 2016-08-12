@@ -5,7 +5,7 @@
  *        3. Восстановление данных из EEPROM во время создания объекта
  *        4. Запись данных в EEPROM в методе increment_value
  *        5. Исправить вывод временных показаний, в данный момен выводятся 0.01м3
- *        6. Добавить в вывод временных показаний единицы измерения показаний 
+ *        6. Добавить в вывод временных показаний единицы измерения показаний
  */
 
 #include <Arduino.h>
@@ -29,6 +29,7 @@ private:
         byte currentHour;
         byte currentDay;
         byte currentWeek;
+        byte lastWeek;
         byte weekday;
         byte currentMonth;
 };

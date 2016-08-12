@@ -11,20 +11,32 @@ void dataStore::set_value(long _dataValue) {
         dataValueWeekly = 0;
         dataValueHour = 0;
 
+        currentHour =0;
+        currentDay=0;
+        currentWeek=0;
+        lastWeek=0;
+        weekday=0;
+        currentMonth=0;
 }
 // если date не совпадает с предыдущем значением,то сбрасываем соответственные счетчики - дневной, недельный, месячный
 void dataStore::increment_value(Rtc_Pcf8563 rtc) {
         if (currentHour != rtc.getHour()) {
                 currentHour = rtc.getHour();
                 dataValueHour = 1;
-        }
-        else
+        } else
                 dataValueDaily++;
         if (currentDay != rtc.getDay()) {
+                if (currentDay ==7 && rtc.getDay() ==1)
+                        currentWeek++;
                 currentDay = rtc.getDay();
                 dataValueDaily = 1;
         } else
                 dataValueHour++;
+        if (currentWeek !=lastWeek) {
+                lastWeek = currentWeek;
+                dataValueWeekly = 1;
+        } else
+                dataValueMonthly++;
         if (currentMonth != rtc.getMonth()) {
                 currentMonth = rtc.getMonth();
                 dataValueMonthly = 1;
