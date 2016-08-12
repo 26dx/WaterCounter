@@ -35,7 +35,7 @@
 Rtc_Pcf8563 rtc;
 
 // counters
-volatile uint8_t flagMenu, flagCounter, flagInMenu, buttonPressed = 0;
+volatile uint8_t flagMenu, flagCounter, flagInMenu, buttonPressed, displayCycle = 0;
 volatile uint16_t counterSleep = 0;
 
 // dataStore
@@ -143,6 +143,8 @@ void loop() {
                 flagCounter = 0;
                 valuesPrint();
         }
+        if (displayCycle)
+                valuesPrint();
         if (flagMenu) {
                 flagMenu = 0;
                 menu();
@@ -280,9 +282,13 @@ uint8_t buttonScan() {
 }
 
 void interruptButton() {
-        counterSleep = 0;
-        flagMenu = 1;
-        buttonPressed = 1;
+        if (buttonScan() == 6 || buttonScan() == 9) {
+                counterSleep = 0;
+                flagMenu = 1;
+                buttonPressed = 1;
+        }
+        else
+                displayCycle = 1;
 }
 
 void sleepEnable() {
