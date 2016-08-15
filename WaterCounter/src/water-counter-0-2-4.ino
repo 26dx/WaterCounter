@@ -39,8 +39,8 @@ volatile uint8_t flagMenu, flagCounter, flagInMenu, buttonPressed, displayCycle 
 volatile uint16_t counterSleep = 0;
 
 // dataStore
-dataStore counterData01("Cold");
-dataStore counterData02("Hot");
+dataStore counterData01("Cold", rtc);
+dataStore counterData02("Hot", rtc);
 
 // forwart declaration
 void on_item1_selected(MenuItem *p_menu_item);

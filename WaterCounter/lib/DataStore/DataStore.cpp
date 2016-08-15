@@ -1,50 +1,26 @@
 #include <Arduino.h>
 #include "DataStore.h"
 
-dataStore::dataStore(String _description) {
+dataStore::dataStore(String _description, Rtc_Pcf8563 _startValues) {
         dataDesctiption = _description;
+        day = _startValues.getDay();
+        hour = _startValues.getHour();
+        indexDay = 0;
+        indexHour = 0;
+        for (int i =0; i<24; dataValueHour[i++]=0);
+        for (int i =0; i<30; dataValueDay[i++]=0);
+
 }
 void dataStore::set_value(long _dataValue) {
         dataValueOverall = _dataValue;
-        dataValueDaily = 0;
-        dataValueMonthly = 0;
-        dataValueWeekly = 0;
-        dataValueHour = 0;
-
-        currentHour =0;
-        currentDay=0;
-        currentWeek=0;
-        lastWeek=0;
-        weekday=0;
-        currentMonth=0;
 }
 // если date не совпадает с предыдущем значением,то сбрасываем соответственные счетчики - дневной, недельный, месячный
 void dataStore::increment_value(Rtc_Pcf8563 rtc) {
-        if (currentHour != rtc.getHour()) {
-                currentHour = rtc.getHour();
-                dataValueHour = 1;
-        } else
-                dataValueDaily++;
-        if (currentDay != rtc.getDay()) {
-                if (currentDay ==7 && rtc.getDay() ==1)
-                        currentWeek++;
-                currentDay = rtc.getDay();
-                dataValueDaily = 1;
-        } else
-                dataValueHour++;
-        if (currentWeek !=lastWeek) {
-                lastWeek = currentWeek;
-                dataValueWeekly = 1;
-        } else
-                dataValueMonthly++;
-        if (currentMonth != rtc.getMonth()) {
-                currentMonth = rtc.getMonth();
-                dataValueMonthly = 1;
-        } else
-                dataValueMonthly++;
-
-        dataValueWeekly = 0;
         dataValueOverall++;
+        if (day!=rtc.getDay()) {
+              day = rtc.getDay();
+        }
+
 }
 long dataStore::get_value() {
         return dataValueOverall;

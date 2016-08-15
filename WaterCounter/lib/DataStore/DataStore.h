@@ -13,7 +13,7 @@
 
 class dataStore {
 public:
-        dataStore(String _description);
+        dataStore(String _description, Rtc_Pcf8563 _startValues);
         void set_value(long _dataValue);
         void increment_value(Rtc_Pcf8563 rtc);
         long get_value();
@@ -21,15 +21,11 @@ public:
         String get_description();
 private:
         long dataValueOverall;
-        uint8_t dataValueHour;
-        uint8_t dataValueMonthly;
-        uint8_t dataValueWeekly;
-        uint8_t dataValueDaily;
+        uint8_t dataValueHour[24];
+        uint16_t dataValueDay[30];
         String dataDesctiption;
-        byte currentHour;
-        byte currentDay;
-        byte currentWeek;
-        byte lastWeek;
-        byte weekday;
-        byte currentMonth;
+        byte day;
+        byte hour;
+        byte indexDay;
+        byte indexHour;
 };
