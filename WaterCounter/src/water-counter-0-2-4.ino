@@ -131,8 +131,10 @@ void setup() {
         attachInterrupt(1, interruptButton, RISING);
 
         // loading values from EEPROM
-        counterData01.set_value(EEPROMReadLong(ADDRESS_0));
-        counterData02.set_value(EEPROMReadLong(ADDRESS_1));
+//        counterData01.set_value(EEPROMReadLong(ADDRESS_0));
+//        counterData02.set_value(EEPROMReadLong(ADDRESS_1));
+        counterData01.loadDataStore(ADDRESS_0);
+        counterData02.loadDataStore(ADDRESS_1);
 
         // print current values
         valuesPrint();
@@ -254,8 +256,10 @@ void menu() {
         } while (flagInMenu);
         counterData01.set_value(mu2_mi1.get_value());
         counterData02.set_value(mu2_mi2.get_value());
-        EEPROMWriteLong(ADDRESS_0, counterData01.get_value());
-        EEPROMWriteLong(ADDRESS_1, counterData02.get_value());
+//        EEPROMWriteLong(ADDRESS_0, counterData01.get_value());
+//        EEPROMWriteLong(ADDRESS_1, counterData02.get_value());
+        counterData01.saveDataStore(ADDRESS_0);
+        counterData02.saveDataStore(ADDRESS_1);
         valuesPrint();
 }
 
@@ -263,11 +267,13 @@ void interruptInput() {
         counterSleep = 0;
         if (digitalRead(4)) {
                 counterData01.increment_value(rtc);
-                EEPROMWriteLong(ADDRESS_0, counterData01.get_value());
+//                EEPROMWriteLong(ADDRESS_0, counterData01.get_value());
+                counterData01.saveDataStore(ADDRESS_0);
         }
         else if (digitalRead(5)) {
                 counterData02.increment_value(rtc);
-                EEPROMWriteLong(ADDRESS_1, counterData02.get_value());
+//                EEPROMWriteLong(ADDRESS_1, counterData02.get_value());
+                counterData02.saveDataStore(ADDRESS_1);
         }
         flagCounter = 1;
 }
