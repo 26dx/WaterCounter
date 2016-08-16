@@ -10,6 +10,7 @@
 
 #include <Arduino.h>
 #include <Rtc_Pcf8563.h>
+#include <EEPROM.h>
 
 class dataStore {
 public:
@@ -19,13 +20,16 @@ public:
         long get_value();
         String get_formated_value(long input);
         String get_description();
+        uint8_t saveDataStore(uint8_t _startAddress);
+        void loadDataStore(uint8_t _startAddress);
 private:
         long dataValueOverall;
         uint8_t dataValueHour[24];
-        uint16_t dataValueDay[30];
+        uint8_t dataValueDay[31];
         String dataDesctiption;
         byte day;
         byte hour;
         byte indexDay;
         byte indexHour;
+        uint8_t endAddress;
 };
