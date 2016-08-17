@@ -105,7 +105,7 @@ void setup() {
         //hr, min, sec
         rtc.setTime(21, 19, 0);
  */
-        Serial.println();
+        Serial.println("Starting init");
 
         // menu init
         ms.get_root_menu().add_menu(&mu1);
@@ -133,8 +133,8 @@ void setup() {
         // loading values from EEPROM
 //        counterData01.set_value(EEPROMReadLong(ADDRESS_0));
 //        counterData02.set_value(EEPROMReadLong(ADDRESS_1));
-        Serial.println(counterData01.loadDataStore(ADDRESS_0);
-        Serial.println(counterData02.loadDataStore(ADDRESS_1);
+        Serial.println(counterData01.loadDataStore(ADDRESS_0));
+        Serial.println(counterData02.loadDataStore(ADDRESS_1));
 
         // print current values
         valuesPrint();

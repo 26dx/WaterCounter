@@ -1,7 +1,7 @@
-#include <Arduino.h>
 #include "DataStore.h"
 
 dataStore::dataStore(String _description, Rtc_Pcf8563 _startValues) {
+        Serial.println("Init dataStore");
         dataDesctiption = _description;
         day = _startValues.getDay();
         hour = _startValues.getHour();
