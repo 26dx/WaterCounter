@@ -57,10 +57,11 @@ uint8_t dataStore::saveDataStore(uint8_t _startAddress) {
         }
         return (++_address);
 }
-void dataStore::loadDataStore(uint8_t _startAddress) {
+uint8_t dataStore::loadDataStore(uint8_t _startAddress) {
         long _byte[4] = {0,0,0,0};
         for (int i=0; i<4; i++)
                 _byte[i]=EEPROM.read(_startAddress+i);
         dataValueOverall = (_byte[0] & 0xFF) + ((_byte[1] << 8) & 0xFF00) + ((_byte[2] << 16) & 0xFF0000) +
                ((_byte[3] << 24) & 0xFF000000);
+        return (_startAddress+4);
 }

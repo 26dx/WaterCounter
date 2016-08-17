@@ -21,7 +21,7 @@ public:
         String get_formated_value(long input);
         String get_description();
         uint8_t saveDataStore(uint8_t _startAddress);
-        void loadDataStore(uint8_t _startAddress);
+        uint8_t loadDataStore(uint8_t _startAddress);
 private:
         long dataValueOverall;
         uint8_t dataValueHour[24];
