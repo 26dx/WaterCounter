@@ -13,6 +13,7 @@
 
 #include "CustomNumericMenuItem.h"
 #include <MenuSystem.h>
+#include <LiquidCrystal_I2C.h>
 
 class CustomNumericMenuItem;
 

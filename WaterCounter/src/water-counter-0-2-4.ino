@@ -27,12 +27,14 @@
 #include <MenuSystem.h>
 #include <avr/sleep.h>
 #include <Rtc_Pcf8563.h>
+#include <LiquidCrystal_I2C.h>
 
 #define ADDRESS_0 0
 #define ADDRESS_1 4
 
 //init the real time clock
 Rtc_Pcf8563 rtc;
+LiquidCrystal_I2C lcd(0x27,16,2);
 
 // counters and flags
 volatile uint8_t flagMenu, flagCounter, flagInMenu, buttonPressed, displayCycle = 0;
@@ -40,8 +42,8 @@ volatile uint8_t flagInput0, flagInput1 = 0;
 volatile uint16_t counterSleep = 0;
 
 // dataStore
-dataStore counterData01("Cold");
-dataStore counterData02("Hot");
+dataStore counterData01("Hot");
+dataStore counterData02("Cold");
 
 // forwart declaration
 void on_item1_selected(MenuItem *p_menu_item);
@@ -62,8 +64,8 @@ MenuItem mu1_mi2("1.2.Monthly ", &on_item2_selected);
 MenuItem mu1_mi3("1.3.Weekly  ", &on_item3_selected);
 MenuItem mu1_mi4("1.4.Daily   ", &on_item7_selected);
 Menu mu2("2.Setup     ");
-NumericMenuItem mu2_mi1("2.1.In0 ", nullptr, 0, 0, 99999, 1, format_int);
-NumericMenuItem mu2_mi2("2.2.In1 ", nullptr, 0, 0, 99999, 1, format_int);
+NumericMenuItem mu2_mi1("2.1.In0 ", nullptr, 0, 0, 9999999, 1, format_int);
+NumericMenuItem mu2_mi2("2.2.In1 ", nullptr, 0, 0, 9999999, 1, format_int);
 MenuItem mu2_mi3("2.3.Reset   ", &on_item6_selected);
 MenuItem mm_mi1("3.Exit      ", &mi_return);
 
@@ -97,6 +99,9 @@ void mi_return(MenuItem *p_menu_item) {
 
 void setup() {
         Serial.begin(9600);
+        lcd.init();
+        lcd.backlight();
+        lcd.print("Water Counter");
 
 //      RTC initialization
         /*//clear out the registers
@@ -176,10 +181,10 @@ void valuesPrint() {
         String textUnit="m3/m";
         String buffer;
         // шкала по оси икс
-        for (int i=0; i<10; Serial.print(i++));
-        for (int i=0; i<6; Serial.print(i++));
+//        for (int i=0; i<10; Serial.print(i++));
+//        for (int i=0; i<6; Serial.print(i++));
 
-        Serial.println();
+//        Serial.println();
         if (counterData01.get_description().length()<=5) {
                 buffer+=counterData01.get_description();
                 for (int i=0; i<=(5 - counterData01.get_description().length()); i++)
@@ -192,7 +197,9 @@ void valuesPrint() {
         }
         buffer+=rtc.formatTime(RTCC_TIME_HM);
         // выподим первую строку экрана
-        Serial.println(buffer);
+//        Serial.println(buffer);
+        lcd.setCursor(0,0);
+        lcd.print(buffer);
 
         // готовим вторую строку
         buffer = "";
@@ -207,8 +214,9 @@ void valuesPrint() {
                 buffer+=" ";
         buffer+="m3";
         // выводим сторую строку
-        Serial.println(buffer);
-
+  //      Serial.println(buffer);
+          lcd.setCursor(0,1);
+          lcd.print(buffer);
 }
 
 void menu() {

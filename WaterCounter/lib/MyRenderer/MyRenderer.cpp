@@ -2,6 +2,8 @@
 
 void MyRenderer::render(Menu const& menu) const
 {
+//  lcd.setCursor(0,0);
+//  lcd.print(menu.get_name());
   Serial.println(menu.get_name());
   menu.get_current_component()->render(*this);
   Serial.println();
