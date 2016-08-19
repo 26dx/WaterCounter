@@ -34,13 +34,14 @@
 //init the real time clock
 Rtc_Pcf8563 rtc;
 
-// counters
+// counters and flags
 volatile uint8_t flagMenu, flagCounter, flagInMenu, buttonPressed, displayCycle = 0;
+volatile uint8_t flagInput0, flagInput1 = 0;
 volatile uint16_t counterSleep = 0;
 
 // dataStore
-dataStore counterData01("Cold", rtc);
-dataStore counterData02("Hot", rtc);
+dataStore counterData01("Cold");
+dataStore counterData02("Hot");
 
 // forwart declaration
 void on_item1_selected(MenuItem *p_menu_item);
@@ -97,15 +98,17 @@ void mi_return(MenuItem *p_menu_item) {
 void setup() {
         Serial.begin(9600);
 
-/*      RTC initialization
-        //clear out the registers
-        rtc.initClock();
-        //day, weekday, month, century(1=1900, 0=2000), year(0-99)
-        rtc.setDate(10, 4, 8, 0, 16);
-        //hr, min, sec
-        rtc.setTime(21, 19, 0);
- */
+//      RTC initialization
+        /*//clear out the registers
+           rtc.initClock();
+           //day, weekday, month, century(1=1900, 0=2000), year(0-99)
+           rtc.setDate(18, 5, 8, 0, 16);
+           //hr, min, sec
+           rtc.setTime(14, 14, 0);*/
+
         Serial.println("Starting init");
+        counterData01.set_time_date(rtc);
+        counterData02.set_time_date(rtc);
 
         // menu init
         ms.get_root_menu().add_menu(&mu1);
@@ -131,8 +134,6 @@ void setup() {
         attachInterrupt(1, interruptButton, RISING);
 
         // loading values from EEPROM
-//        counterData01.set_value(EEPROMReadLong(ADDRESS_0));
-//        counterData02.set_value(EEPROMReadLong(ADDRESS_1));
         Serial.println(counterData01.loadDataStore(ADDRESS_0));
         Serial.println(counterData02.loadDataStore(ADDRESS_1));
 
@@ -142,11 +143,22 @@ void setup() {
 
 void loop() {
         if (flagCounter) {
+                if (flagInput0) {
+                        counterData01.increment_value(rtc);
+                        counterData01.saveDataStore(ADDRESS_0);
+                        flagInput0 = 0;
+                }
+                else if (flagInput1) {
+                        counterData02.increment_value(rtc);
+                        counterData02.saveDataStore(ADDRESS_1);
+                        flagInput1 = 1;
+                }
                 flagCounter = 0;
                 valuesPrint();
         }
-        if (displayCycle)
+        if (displayCycle) {
                 valuesPrint();
+        }
         if (flagMenu) {
                 flagMenu = 0;
                 menu();
@@ -256,8 +268,6 @@ void menu() {
         } while (flagInMenu);
         counterData01.set_value(mu2_mi1.get_value());
         counterData02.set_value(mu2_mi2.get_value());
-//        EEPROMWriteLong(ADDRESS_0, counterData01.get_value());
-//        EEPROMWriteLong(ADDRESS_1, counterData02.get_value());
         counterData01.saveDataStore(ADDRESS_0);
         counterData02.saveDataStore(ADDRESS_1);
         valuesPrint();
@@ -265,16 +275,10 @@ void menu() {
 
 void interruptInput() {
         counterSleep = 0;
-        if (digitalRead(4)) {
-                counterData01.increment_value(rtc);
-//                EEPROMWriteLong(ADDRESS_0, counterData01.get_value());
-                counterData01.saveDataStore(ADDRESS_0);
-        }
-        else if (digitalRead(5)) {
-                counterData02.increment_value(rtc);
-//                EEPROMWriteLong(ADDRESS_1, counterData02.get_value());
-                counterData02.saveDataStore(ADDRESS_1);
-        }
+        if (digitalRead(4))
+                flagInput0 = 1;
+        else if (digitalRead(5))
+                flagInput1 = 1;
         flagCounter = 1;
 }
 
@@ -288,13 +292,9 @@ uint8_t buttonScan() {
 }
 
 void interruptButton() {
-        if (buttonScan() == 6 || buttonScan() == 9) {
-                counterSleep = 0;
-                flagMenu = 1;
-                buttonPressed = 1;
-        }
-        else
-                displayCycle = 1;
+        counterSleep = 0;
+        flagMenu = 1;
+        buttonPressed = 1;
 }
 
 void sleepEnable() {
@@ -305,23 +305,4 @@ void sleepEnable() {
         sleep_mode();
         sleep_disable();
         digitalWrite(13, HIGH);
-}
-void EEPROMWriteLong(int address, long value) {
-        byte b0 = value;
-        byte b1 = (value >> 8);
-        byte b2 = (value >> 16);
-        byte b3 = (value >> 24);
-        EEPROM.write(address, b0);
-        EEPROM.write(address + 1, b1);
-        EEPROM.write(address + 2, b2);
-        EEPROM.write(address + 3, b3);
-}
-
-long EEPROMReadLong(int address) {
-        long b0 = EEPROM.read(address);
-        long b1 = EEPROM.read(address + 1);
-        long b2 = EEPROM.read(address + 2);
-        long b3 = EEPROM.read(address + 3);
-        return (b0 & 0xFF) + ((b1 << 8) & 0xFF00) + ((b2 << 16) & 0xFF0000) +
-               ((b3 << 24) & 0xFF000000);
 }

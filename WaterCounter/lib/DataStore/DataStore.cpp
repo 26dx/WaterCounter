@@ -1,18 +1,21 @@
 #include "DataStore.h"
 
-dataStore::dataStore(String _description, Rtc_Pcf8563 _startValues) {
+dataStore::dataStore(String _description) {
         Serial.println("Init dataStore");
         dataDesctiption = _description;
-        day = _startValues.getDay();
-        hour = _startValues.getHour();
+        day = 0;
+        hour = 0;
         indexDay = 0;
         indexHour = 0;
         for (int i =0; i<24; dataValueHour[i++]=0);
         for (int i =0; i<31; dataValueDay[i++]=0);
-
 }
 void dataStore::set_value(long _dataValue) {
         dataValueOverall = _dataValue;
+}
+void dataStore::set_time_date(Rtc_Pcf8563 _rtc) {
+        day = _rtc.getDay();
+        hour = _rtc.getHour();
 }
 void dataStore::increment_value(Rtc_Pcf8563 rtc) {
         dataValueOverall++;
