@@ -16,8 +16,8 @@ class dataStore {
 public:
         dataStore(String _description);
         void set_value(long _dataValue);
-        void set_time_date(Rtc_Pcf8563 _rtc);
-        void increment_value(Rtc_Pcf8563 rtc);
+        void set_time_date(Rtc_Pcf8563& _rtc);
+        void increment_value(Rtc_Pcf8563& _rtc);
         long get_value();
         String get_formated_value(long input);
         String get_description();

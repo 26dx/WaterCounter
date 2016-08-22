@@ -13,14 +13,14 @@ dataStore::dataStore(String _description) {
 void dataStore::set_value(long _dataValue) {
         dataValueOverall = _dataValue;
 }
-void dataStore::set_time_date(Rtc_Pcf8563 _rtc) {
+void dataStore::set_time_date(Rtc_Pcf8563& _rtc) {
         day = _rtc.getDay();
         hour = _rtc.getHour();
 }
-void dataStore::increment_value(Rtc_Pcf8563 rtc) {
+void dataStore::increment_value(Rtc_Pcf8563& _rtc) {
         dataValueOverall++;
-        if (day!=rtc.getDay()) {
-                day = rtc.getDay();
+        if (day!=_rtc.getDay()) {
+                day = _rtc.getDay();
                 if (indexDay<31)
                         indexDay++;
                 else
@@ -28,8 +28,8 @@ void dataStore::increment_value(Rtc_Pcf8563 rtc) {
                 dataValueDay[indexDay]++;
         } else
                 dataValueDay[indexDay]++;
-        if (hour!=rtc.getHour()) {
-                hour = rtc.getHour();
+        if (hour!=_rtc.getHour()) {
+                hour = _rtc.getHour();
                 if (indexHour<24)
                         indexHour++;
                 else

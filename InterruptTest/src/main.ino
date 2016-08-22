@@ -6,7 +6,7 @@ int flag = 0;
 
 class pointerTest {
 public:
-  pointerTest(Rtc_Pcf8563 _rtc) {
+  pointerTest(Rtc_Pcf8563& _rtc) {
         Serial.println(_rtc.getDay());
   }
 };
