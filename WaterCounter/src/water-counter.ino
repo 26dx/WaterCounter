@@ -21,8 +21,8 @@
 
 
 #include <Arduino.h>
-#include "CustomNumericMenuItem.h"
-#include "MyRenderer.h"
+//#include "CustomNumericMenuItem.h"
+//#include "MyRenderer.h"
 #include "DataStore.h"
 #include <EEPROM.h>
 #include <MenuSystem.h>
@@ -36,6 +36,57 @@
 //init the real time clock
 Rtc_Pcf8563 rtc;
 LiquidCrystal_I2C lcd(0x27,16,2);
+
+// render
+class MyRenderer : public MenuComponentRenderer
+{
+public:
+virtual void render(Menu const& menu) const
+{
+//        lcd.clear();
+//        lcd.setCursor(0,0);
+//        lcd.print(menu.get_name());
+//        lcd.setCursor(0,1);
+//        menu.get_current_component()->render(*this);
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print(menu.get_name());
+        Serial.println(menu.get_name());
+        lcd.setCursor(0,1);
+        menu.get_current_component()->render(*this);
+        Serial.println();
+
+}
+
+virtual void render_menu_item(MenuItem const& menu_item) const
+{
+        lcd.print(menu_item.get_name());
+}
+
+virtual void render_back_menu_item(BackMenuItem const& menu_item) const
+{
+        lcd.print(menu_item.get_name());
+}
+
+virtual void render_numeric_menu_item(NumericMenuItem const& menu_item) const
+{
+//        lcd.print(menu_item.get_name());
+        String buffer;
+
+        buffer = menu_item.get_name();
+        buffer += menu_item.has_focus() ? '<' : ' ';
+        buffer += menu_item.get_value_string();
+        if (menu_item.has_focus())
+                buffer += '>';
+        lcd.print(buffer);
+}
+
+virtual void render_menu(Menu const& menu) const
+{
+        lcd.print(menu.get_name());
+}
+};
+
 
 // counters and flags
 volatile uint8_t flagMenu, flagCounter, flagInMenu, buttonPressed, displayCycle = 0;
@@ -215,9 +266,9 @@ void valuesPrint() {
                 buffer+=" ";
         buffer+="m3";
         // выводим сторую строку
-  //      Serial.println(buffer);
-          lcd.setCursor(0,1);
-          lcd.print(buffer);
+        //      Serial.println(buffer);
+        lcd.setCursor(0,1);
+        lcd.print(buffer);
 }
 
 void menu() {
