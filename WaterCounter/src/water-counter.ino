@@ -237,44 +237,12 @@ void loop() {
 // необходимо добавить ограничение длины описания счетчика
 void valuesPrint() {
         String textUnit="m3/m";
-        String buffer;
-        // шкала по оси икс
-//        for (int i=0; i<10; Serial.print(i++));
-//        for (int i=0; i<6; Serial.print(i++));
-
-//        Serial.println();
-        if (counterData01.get_description().length()<=5) {
-                buffer+=counterData01.get_description();
-                for (int i=0; i<=(5 - counterData01.get_description().length()); i++)
-                        buffer+=" ";
-        }
-        if (counterData02.get_description().length()<=4) {
-                buffer+=counterData02.get_description();
-                for (int i=0; i<=(4 - counterData02.get_description().length()); i++)
-                        buffer+=" ";
-        }
-        buffer+=rtc.formatTime(RTCC_TIME_HM);
-        // выподим первую строку экрана
-//        Serial.println(buffer);
+        String buffer = "";
+        lcd.clear();
         lcd.setCursor(0,0);
-        lcd.print(buffer);
-
-        // готовим вторую строку
-        buffer = "";
-        for (int i=0; i<(4-counterData01.get_formated_value(counterData01.get_value()).length()); i++)
-                buffer+=" ";
-        buffer+=counterData01.get_formated_value(counterData01.get_value());
-        for (int i=0; i<(6-counterData02.get_formated_value(counterData02.get_value()).length()); i++)
-                buffer+=" ";
-        buffer+=counterData02.get_formated_value(counterData02.get_value());
-        int bufferLenght = buffer.length();
-        for (int i =0; i<(13-bufferLenght); i++)
-                buffer+=" ";
-        buffer+="m3";
-        // выводим сторую строку
-        //      Serial.println(buffer);
-        lcd.setCursor(0,1);
-        lcd.print(buffer);
+        lcd.print(counterData01.get_description());
+        lcd.setCursor(6, 0);
+        lcd.print(counterData02.get_description());
 }
 
 void menu() {
