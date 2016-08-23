@@ -19,7 +19,7 @@ public:
         void set_time_date(Rtc_Pcf8563& _rtc);
         void increment_value(Rtc_Pcf8563& _rtc);
         long get_value();
-        String get_formated_value(long input);
+        String get_formated_value(long input, uint8_t divider);
         String get_description();
         uint8_t saveDataStore(uint8_t _startAddress);
         uint8_t loadDataStore(uint8_t _startAddress);

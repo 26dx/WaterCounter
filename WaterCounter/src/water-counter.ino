@@ -92,6 +92,7 @@ virtual void render_menu(Menu const& menu) const
 volatile uint8_t flagMenu, flagCounter, flagInMenu, buttonPressed, displayCycle = 0;
 volatile uint8_t flagInput0, flagInput1 = 0;
 volatile uint16_t counterSleep = 0;
+volatile uint8_t currentDisplayTyte, currentDisplayDivider = 0;
 
 // dataStore
 dataStore counterData01("Hot");
@@ -201,7 +202,7 @@ void setup() {
         Serial.println(counterData02.loadDataStore(ADDRESS_1));
 
         // print current values
-        valuesPrint();
+        valuesPrint(100, 1);
 }
 
 void loop() {
@@ -217,10 +218,10 @@ void loop() {
                         flagInput1 = 1;
                 }
                 flagCounter = 0;
-                valuesPrint();
+                valuesPrint(100, 1);
         }
         if (displayCycle) {
-                valuesPrint();
+                valuesPrint(100, 1);
         }
         if (flagMenu) {
                 flagMenu = 0;
@@ -235,20 +236,21 @@ void loop() {
 }
 
 // необходимо добавить ограничение длины описания счетчика
-void valuesPrint() {
+void valuesPrint(uint8_t _divider, uint8_t _type) {
         String textUnit="m3";
-        String buffer = "";
         lcd.clear();
+        // first line
         lcd.setCursor(0,0);
         lcd.print(counterData01.get_description());
         lcd.setCursor(6, 0);
         lcd.print(counterData02.get_description());
         lcd.setCursor(11, 0);
         lcd.print(rtc.formatTime(RTCC_TIME_HM));
+        // second line
         lcd.setCursor(0, 1);
-        lcd.print(counterData01.get_formated_value(counterData01.get_value()));
+        lcd.print(counterData01.get_formated_value(counterData01.get_value(), 100));
         lcd.setCursor(6, 1);
-        lcd.print(counterData02.get_formated_value(counterData02.get_value()));
+        lcd.print(counterData02.get_formated_value(counterData02.get_value(), 100));
         lcd.setCursor(13, 1);
         lcd.print(textUnit);
 }
@@ -312,7 +314,7 @@ void menu() {
         counterData02.set_value(mu2_mi2.get_value());
         counterData01.saveDataStore(ADDRESS_0);
         counterData02.saveDataStore(ADDRESS_1);
-        valuesPrint();
+        valuesPrint(100, 1);
 }
 
 void interruptInput() {

@@ -43,8 +43,8 @@ long dataStore::get_value() {
 }
 // максимальное значение dataValueOverall 9 999 999 (7 разрядов)
 // для выводу показаний достаточно 5 разрядов (99 999)
-String dataStore::get_formated_value(long input) {
-        String buffer = String(input/100);
+String dataStore::get_formated_value(long input, uint8_t divider) {
+        String buffer = String(input/divider);
         return buffer;
 }
 String dataStore::get_description() {
