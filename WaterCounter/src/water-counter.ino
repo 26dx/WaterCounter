@@ -236,13 +236,21 @@ void loop() {
 
 // необходимо добавить ограничение длины описания счетчика
 void valuesPrint() {
-        String textUnit="m3/m";
+        String textUnit="m3";
         String buffer = "";
         lcd.clear();
         lcd.setCursor(0,0);
         lcd.print(counterData01.get_description());
         lcd.setCursor(6, 0);
         lcd.print(counterData02.get_description());
+        lcd.setCursor(11, 0);
+        lcd.print(rtc.formatTime(RTCC_TIME_HM));
+        lcd.setCursor(0, 1);
+        lcd.print(counterData01.get_formated_value(counterData01.get_value()));
+        lcd.setCursor(6, 1);
+        lcd.print(counterData02.get_formated_value(counterData02.get_value()));
+        lcd.setCursor(13, 1);
+        lcd.print(textUnit);
 }
 
 void menu() {
