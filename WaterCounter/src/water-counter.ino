@@ -138,9 +138,15 @@ void on_item3_selected(MenuItem *p_menu_item) {
         delay(1500); // so we can look the result on the LCD
 }
 void on_item6_selected(MenuItem *p_menu_item) {
-        Serial.println("Reseting...");
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("Reseting...");
         counterData01.set_value(0);
         counterData02.set_value(0);
+        counterData01.saveDataStore(ADDRESS_0);
+        counterData02.saveDataStore(ADDRESS_1);
+        mu2_mi1.set_value(counterData01.get_value());
+        mu2_mi2.set_value(counterData02.get_value());
         delay(1500); // so we can look the result on the LCD
 }
 void on_item7_selected(MenuItem *p_menu_item) {
@@ -255,10 +261,10 @@ void valuesPrint() {
 
         // готовим вторую строку
         buffer = "";
-        for (int i=0; i<(5-counterData01.get_formated_value(counterData01.get_value()).length()); i++)
+        for (int i=0; i<(4-counterData01.get_formated_value(counterData01.get_value()).length()); i++)
                 buffer+=" ";
         buffer+=counterData01.get_formated_value(counterData01.get_value());
-        for (int i=0; i<(5-counterData02.get_formated_value(counterData02.get_value()).length()); i++)
+        for (int i=0; i<(6-counterData02.get_formated_value(counterData02.get_value()).length()); i++)
                 buffer+=" ";
         buffer+=counterData02.get_formated_value(counterData02.get_value());
         int bufferLenght = buffer.length();
