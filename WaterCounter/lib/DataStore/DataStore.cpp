@@ -41,6 +41,12 @@ void dataStore::increment_value(Rtc_Pcf8563& _rtc) {
 long dataStore::get_value() {
         return dataValueOverall;
 }
+uint8_t dataStore::get_value_day() {
+        return dataValueDay[indexDay];
+}
+uint8_t dataStore::get_value_hour() {
+        return dataValueHour[indexHour];
+}
 // максимальное значение dataValueOverall 9 999 999 (7 разрядов)
 // для выводу показаний достаточно 5 разрядов (99 999)
 String dataStore::get_formated_value(long input, uint8_t divider) {

@@ -19,6 +19,8 @@ public:
         void set_time_date(Rtc_Pcf8563& _rtc);
         void increment_value(Rtc_Pcf8563& _rtc);
         long get_value();
+        uint8_t get_value_day();
+        uint8_t get_value_hour();        
         String get_formated_value(long input, uint8_t divider);
         String get_description();
         uint8_t saveDataStore(uint8_t _startAddress);

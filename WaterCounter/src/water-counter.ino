@@ -92,7 +92,8 @@ virtual void render_menu(Menu const& menu) const
 volatile uint8_t flagMenu, flagCounter, flagInMenu, buttonPressed, displayCycle = 0;
 volatile uint8_t flagInput0, flagInput1 = 0;
 volatile uint16_t counterSleep = 0;
-volatile uint8_t currentDisplayTyte, currentDisplayDivider = 0;
+volatile uint8_t currentDisplayType = 0;
+volatile uint8_t currentDisplayDivider = 100;
 
 // dataStore
 dataStore counterData01("Hot");
@@ -112,10 +113,10 @@ MyRenderer my_renderer;
 MenuSystem ms(my_renderer);
 
 Menu mu1("1.Display   ");
-MenuItem mu1_mi1("1.1.Overall ", &on_item1_selected);
-MenuItem mu1_mi2("1.2.Monthly ", &on_item2_selected);
-MenuItem mu1_mi3("1.3.Weekly  ", &on_item3_selected);
-MenuItem mu1_mi4("1.4.Daily   ", &on_item7_selected);
+MenuItem mu1_mi1("1.1.Total ", &on_item1_selected);
+MenuItem mu1_mi2("1.2.Hour", &on_item2_selected);
+MenuItem mu1_mi3("1.3.Day", &on_item3_selected);
+MenuItem mu1_mi4("1.4.Week", &on_item7_selected);
 Menu mu2("2.Setup     ");
 NumericMenuItem mu2_mi1("2.1.In0 ", nullptr, 0, 0, 9999999, 1, format_int);
 NumericMenuItem mu2_mi2("2.2.In1 ", nullptr, 0, 0, 9999999, 1, format_int);
@@ -127,16 +128,28 @@ const String format_int(const float value) {
         return String((long)value);
 }
 void on_item1_selected(MenuItem *p_menu_item) {
-        Serial.println("Overall Sel");
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("Setting total");
+        currentDisplayType = 0;
+        currentDisplayType = 100;
         delay(1500); // so we can look the result on the LCD
 }
 void on_item2_selected(MenuItem *p_menu_item) {
-        Serial.println("Monthly Sel");
-        delay(1500); // so we can look the result on the LCD
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("Setting hour");
+        currentDisplayType = 1;
+        currentDisplayType = 1;
+        delay(1500);   // so we can look the result on the LCD
 }
 void on_item3_selected(MenuItem *p_menu_item) {
-        Serial.println("Weekly Sel");
-        delay(1500); // so we can look the result on the LCD
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("Setting day");
+        currentDisplayType = 2;
+        currentDisplayDivider = 1;
+        delay(1500);   // so we can look the result on the LCD
 }
 void on_item6_selected(MenuItem *p_menu_item) {
         lcd.clear();
@@ -202,7 +215,7 @@ void setup() {
         Serial.println(counterData02.loadDataStore(ADDRESS_1));
 
         // print current values
-        valuesPrint(100, 1);
+        valuesPrint(currentDisplayDivider, currentDisplayType);
 }
 
 void loop() {
@@ -218,10 +231,15 @@ void loop() {
                         flagInput1 = 1;
                 }
                 flagCounter = 0;
-                valuesPrint(100, 1);
+                valuesPrint(currentDisplayDivider, currentDisplayType);
         }
         if (displayCycle) {
-                valuesPrint(100, 1);
+                if (currentDisplayType == 2)
+                        currentDisplayType = 0;
+                else
+                        currentDisplayType++;
+                valuesPrint(currentDisplayDivider, currentDisplayType);
+                displayCycle = 0;
         }
         if (flagMenu) {
                 flagMenu = 0;
@@ -235,9 +253,28 @@ void loop() {
             delay(100);*/
 }
 
-// необходимо добавить ограничение длины описания счетчика
+// делитель и тип (час, день, неделя, месяц)
 void valuesPrint(uint8_t _divider, uint8_t _type) {
-        String textUnit="m3";
+        long dataOut[2] = {0,0};
+        String textUnit="";
+        switch (_type) {
+        case 0: dataOut[0] = counterData01.get_value();
+                dataOut[1] = counterData02.get_value();
+                textUnit = "m3";
+                break;
+        case 1: dataOut[0] = long(counterData01.get_value_hour());
+                dataOut[1] = long(counterData02.get_value_hour());
+                textUnit = "m3h";
+                break;
+        case 2: dataOut[0] = long(counterData01.get_value_day());
+                dataOut[1] = long(counterData02.get_value_day());
+                textUnit = "m3d";
+                break;
+        default: dataOut[0] = counterData01.get_value();
+                dataOut[1] = counterData02.get_value();
+                textUnit = "xxx";
+                break;
+        }
         lcd.clear();
         // first line
         lcd.setCursor(0,0);
@@ -248,9 +285,9 @@ void valuesPrint(uint8_t _divider, uint8_t _type) {
         lcd.print(rtc.formatTime(RTCC_TIME_HM));
         // second line
         lcd.setCursor(0, 1);
-        lcd.print(counterData01.get_formated_value(counterData01.get_value(), 100));
+        lcd.print(counterData01.get_formated_value(dataOut[0], _divider));
         lcd.setCursor(6, 1);
-        lcd.print(counterData02.get_formated_value(counterData02.get_value(), 100));
+        lcd.print(counterData02.get_formated_value(dataOut[1], _divider));
         lcd.setCursor(13, 1);
         lcd.print(textUnit);
 }
@@ -314,7 +351,7 @@ void menu() {
         counterData02.set_value(mu2_mi2.get_value());
         counterData01.saveDataStore(ADDRESS_0);
         counterData02.saveDataStore(ADDRESS_1);
-        valuesPrint(100, 1);
+        valuesPrint(currentDisplayDivider, currentDisplayType);
 }
 
 void interruptInput() {
