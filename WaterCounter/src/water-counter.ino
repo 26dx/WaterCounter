@@ -132,7 +132,7 @@ void on_item1_selected(MenuItem *p_menu_item) {
         lcd.setCursor(0, 0);
         lcd.print("Setting total");
         currentDisplayType = 0;
-        currentDisplayType = 100;
+        currentDisplayDivider = 100;
         delay(1500); // so we can look the result on the LCD
 }
 void on_item2_selected(MenuItem *p_menu_item) {
@@ -140,7 +140,7 @@ void on_item2_selected(MenuItem *p_menu_item) {
         lcd.setCursor(0, 0);
         lcd.print("Setting hour");
         currentDisplayType = 1;
-        currentDisplayType = 1;
+        currentDisplayDivider = 1;
         delay(1500);   // so we can look the result on the LCD
 }
 void on_item3_selected(MenuItem *p_menu_item) {
