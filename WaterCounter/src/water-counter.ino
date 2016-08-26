@@ -30,12 +30,20 @@
 #include <Rtc_Pcf8563.h>
 #include <LiquidCrystal_I2C.h>
 
-#define ADDRESS_0 0
-#define ADDRESS_1 4
+//graph chars
 
+uint8_t char_1[8] = {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1f};
+uint8_t char_2[8] = {0x0,0x0,0x0,0x0,0x0,0x0,0x1f,0x1f};
+uint8_t char_3[8] = {0x0,0x0,0x0,0x0,0x0,0x1f,0x1f,0x1f};
+uint8_t char_4[8] = {0x0,0x0,0x0,0x0,0x1f,0x1f,0x1f,0x1f};
+uint8_t char_5[8] = {0x0,0x0,0x0,0x1f,0x1f,0x1f,0x1f,0x1f};
+uint8_t char_6[8] = {0x0,0x0,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f};
+uint8_t char_7[8] = {0x0,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f};
+uint8_t char_8[8] = {0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f};
 //init the real time clock
 Rtc_Pcf8563 rtc;
 LiquidCrystal_I2C lcd(0x27,16,2);
+
 
 // render
 class MyRenderer : public MenuComponentRenderer
@@ -51,10 +59,8 @@ virtual void render(Menu const& menu) const
         lcd.clear();
         lcd.setCursor(0,0);
         lcd.print(menu.get_name());
-        Serial.println(menu.get_name());
         lcd.setCursor(0,1);
         menu.get_current_component()->render(*this);
-        Serial.println();
 
 }
 
@@ -94,10 +100,11 @@ volatile uint8_t flagInput0, flagInput1 = 0;
 volatile uint16_t counterSleep = 0;
 volatile uint8_t currentDisplayType = 0;
 volatile uint8_t currentDisplayDivider = 100;
+uint8_t address0, address1 = 0;
 
 // dataStore
-dataStore counterData01("Hot");
-dataStore counterData02("Cold");
+dataStore counterData0("Hot");
+dataStore counterData1("Cold");
 
 // forwart declaration
 void on_item1_selected(MenuItem *p_menu_item);
@@ -105,6 +112,7 @@ void on_item2_selected(MenuItem *p_menu_item);
 void on_item3_selected(MenuItem *p_menu_item);
 void on_item6_selected(MenuItem *p_menu_item);
 void on_item7_selected(MenuItem *p_menu_item);
+void on_item8_selected(MenuItem *p_menu_item);
 void mi_return(MenuItem *p_menu_item);
 const String format_int(const float value);
 
@@ -121,7 +129,9 @@ Menu mu2("2.Setup     ");
 NumericMenuItem mu2_mi1("2.1.In0 ", nullptr, 0, 0, 9999999, 1, format_int);
 NumericMenuItem mu2_mi2("2.2.In1 ", nullptr, 0, 0, 9999999, 1, format_int);
 MenuItem mu2_mi3("2.3.Reset   ", &on_item6_selected);
-MenuItem mm_mi1("3.Exit      ", &mi_return);
+Menu mu3("3.Data");
+MenuItem mu3_mi1("3.1.Hour", &on_item8_selected);
+MenuItem mm_mi1("4.Exit", &mi_return);
 
 // menu callback functions
 const String format_int(const float value) {
@@ -155,15 +165,30 @@ void on_item6_selected(MenuItem *p_menu_item) {
         lcd.clear();
         lcd.setCursor(0,0);
         lcd.print("Reseting...");
-        counterData01.set_value(0);
-        counterData02.set_value(0);
-        counterData01.saveDataStore(ADDRESS_0);
-        counterData02.saveDataStore(ADDRESS_1);
-        mu2_mi1.set_value(counterData01.get_value());
-        mu2_mi2.set_value(counterData02.get_value());
+        Serial.println("##set value");
+        counterData0.set_value(0);
+        counterData1.set_value(0);
+        counterData0.reset();
+        counterData1.reset();
+        Serial.println("##save store 0");
+        counterData0.saveDataStore(address0);
+        Serial.println("##save store 1");
+        counterData1.saveDataStore(address1);
+
+        Serial.println("##set menu value");
+        mu2_mi1.set_value(counterData0.get_value());
+        mu2_mi2.set_value(counterData1.get_value());
         delay(1500); // so we can look the result on the LCD
 }
 void on_item7_selected(MenuItem *p_menu_item) {
+}
+void on_item8_selected(MenuItem *p_menu_item) {
+        Serial.println("couter 0");
+        counterData0.printStorage24h();
+        Serial.println("couter 1");
+        counterData1.printStorage24h();
+        counterData0.display_last12hours_to_lcd(lcd);
+        delay(5000);
 }
 void mi_return(MenuItem *p_menu_item) {
         flagInMenu = 0;
@@ -172,7 +197,18 @@ void mi_return(MenuItem *p_menu_item) {
 void setup() {
         Serial.begin(9600);
         lcd.init();
+
+        lcd.createChar(0, char_1);
+      	lcd.createChar(1, char_2);
+      	lcd.createChar(2, char_3);
+      	lcd.createChar(3, char_4);
+      	lcd.createChar(4, char_5);
+      	lcd.createChar(5, char_6);
+      	lcd.createChar(6, char_7);
+      	lcd.createChar(7, char_8);
+
         lcd.backlight();
+        lcd.home();
         lcd.print("Water Counter");
 
 //      RTC initialization
@@ -184,8 +220,8 @@ void setup() {
            rtc.setTime(14, 14, 0);*/
 
         Serial.println("Starting init");
-        counterData01.set_time_date(rtc);
-        counterData02.set_time_date(rtc);
+        counterData0.set_time_date(rtc);
+        counterData1.set_time_date(rtc);
 
         // menu init
         ms.get_root_menu().add_menu(&mu1);
@@ -197,6 +233,8 @@ void setup() {
         mu2.add_item(&mu2_mi1);
         mu2.add_item(&mu2_mi2);
         mu2.add_item(&mu2_mi3);
+        ms.get_root_menu().add_menu(&mu3);
+        mu3.add_item(&mu3_mi1);
         ms.get_root_menu().add_item(&mm_mi1);
 
         // init pins
@@ -211,8 +249,10 @@ void setup() {
         attachInterrupt(1, interruptButton, RISING);
 
         // loading values from EEPROM
-        Serial.println(counterData01.loadDataStore(ADDRESS_0));
-        Serial.println(counterData02.loadDataStore(ADDRESS_1));
+        address1 = counterData0.loadDataStore(0);
+        counterData1.loadDataStore(address1);
+        Serial.println(address0);
+        Serial.println(address1);
 
         // print current values
         valuesPrint(currentDisplayDivider, currentDisplayType);
@@ -221,13 +261,13 @@ void setup() {
 void loop() {
         if (flagCounter) {
                 if (flagInput0) {
-                        counterData01.increment_value(rtc);
-                        counterData01.saveDataStore(ADDRESS_0);
+                        counterData0.increment_value(rtc);
+                        counterData0.saveDataStore(address0);
                         flagInput0 = 0;
                 }
                 else if (flagInput1) {
-                        counterData02.increment_value(rtc);
-                        counterData02.saveDataStore(ADDRESS_1);
+                        counterData1.increment_value(rtc);
+                        counterData1.saveDataStore(address1);
                         flagInput1 = 1;
                 }
                 flagCounter = 0;
@@ -258,44 +298,44 @@ void valuesPrint(uint8_t _divider, uint8_t _type) {
         long dataOut[2] = {0,0};
         String textUnit="";
         switch (_type) {
-        case 0: dataOut[0] = counterData01.get_value();
-                dataOut[1] = counterData02.get_value();
+        case 0: dataOut[0] = counterData0.get_value();
+                dataOut[1] = counterData1.get_value();
                 textUnit = "m3";
                 break;
-        case 1: dataOut[0] = long(counterData01.get_value_hour());
-                dataOut[1] = long(counterData02.get_value_hour());
+        case 1: dataOut[0] = long(counterData0.get_value_last_hour());
+                dataOut[1] = long(counterData1.get_value_last_hour());
                 textUnit = "m3h";
                 break;
-        case 2: dataOut[0] = long(counterData01.get_value_day());
-                dataOut[1] = long(counterData02.get_value_day());
+        case 2: dataOut[0] = long(counterData0.get_value_last_day());
+                dataOut[1] = long(counterData1.get_value_last_day());
                 textUnit = "m3d";
                 break;
-        default: dataOut[0] = counterData01.get_value();
-                dataOut[1] = counterData02.get_value();
+        default: dataOut[0] = counterData0.get_value();
+                dataOut[1] = counterData1.get_value();
                 textUnit = "xxx";
                 break;
         }
         lcd.clear();
         // first line
         lcd.setCursor(0,0);
-        lcd.print(counterData01.get_description());
+        lcd.print(counterData0.get_description());
         lcd.setCursor(6, 0);
-        lcd.print(counterData02.get_description());
+        lcd.print(counterData1.get_description());
         lcd.setCursor(11, 0);
         lcd.print(rtc.formatTime(RTCC_TIME_HM));
         // second line
         lcd.setCursor(0, 1);
-        lcd.print(counterData01.get_formated_value(dataOut[0], _divider));
+        lcd.print(counterData0.get_formated_value(dataOut[0], _divider));
         lcd.setCursor(6, 1);
-        lcd.print(counterData02.get_formated_value(dataOut[1], _divider));
+        lcd.print(counterData1.get_formated_value(dataOut[1], _divider));
         lcd.setCursor(13, 1);
         lcd.print(textUnit);
 }
 
 void menu() {
         uint8_t incCounter = 0;
-        mu2_mi1.set_value(counterData01.get_value());
-        mu2_mi2.set_value(counterData02.get_value());
+        mu2_mi1.set_value(counterData0.get_value());
+        mu2_mi2.set_value(counterData1.get_value());
         flagInMenu = 1;
         ms.display();
         do {
@@ -347,10 +387,10 @@ void menu() {
                 }
                 delay(220);
         } while (flagInMenu);
-        counterData01.set_value(mu2_mi1.get_value());
-        counterData02.set_value(mu2_mi2.get_value());
-        counterData01.saveDataStore(ADDRESS_0);
-        counterData02.saveDataStore(ADDRESS_1);
+        counterData0.set_value(mu2_mi1.get_value());
+        counterData1.set_value(mu2_mi2.get_value());
+        counterData0.saveDataStore(address0);
+        counterData1.saveDataStore(address1);
         valuesPrint(currentDisplayDivider, currentDisplayType);
 }
 

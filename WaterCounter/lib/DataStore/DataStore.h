@@ -11,6 +11,7 @@
 #include <Arduino.h>
 #include <Rtc_Pcf8563.h>
 #include <EEPROM.h>
+#include <LiquidCrystal_I2C.h>
 
 class dataStore {
 public:
@@ -18,17 +19,20 @@ public:
         void set_value(long _dataValue);
         void set_time_date(Rtc_Pcf8563& _rtc);
         void increment_value(Rtc_Pcf8563& _rtc);
+        void reset();
+        void display_last12hours_to_lcd(LiquidCrystal_I2C& _lcd);
         long get_value();
-        uint8_t get_value_day();
-        uint8_t get_value_hour();        
+        uint16_t get_value_last_day();
+        uint16_t get_value_last_hour();
         String get_formated_value(long input, uint8_t divider);
         String get_description();
         uint8_t saveDataStore(uint8_t _startAddress);
         uint8_t loadDataStore(uint8_t _startAddress);
+        void printStorage24h();
 private:
         long dataValueOverall;
-        uint8_t dataValueHour[24];
-        uint8_t dataValueDay[31];
+        uint16_t dataValueHour[24];
+        uint16_t dataValueDay[31];
         String dataDesctiption;
         byte day;
         byte hour;
