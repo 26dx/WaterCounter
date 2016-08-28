@@ -268,7 +268,7 @@ void loop() {
                 else if (flagInput1) {
                         counterData1.increment_value(rtc);
                         counterData1.saveDataStore(address1);
-                        flagInput1 = 1;
+                        flagInput1 = 0;
                 }
                 flagCounter = 0;
                 valuesPrint(currentDisplayDivider, currentDisplayType);
